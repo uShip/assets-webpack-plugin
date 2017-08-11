@@ -79,7 +79,7 @@ AssetsWebpackPlugin.prototype = {
   }
 }
 
-function defaultManifest(stats, pluginOptions, utils) {
+function defaultManifest (stats, pluginOptions, utils) {
   var assetPath = (stats.publicPath && pluginOptions.fullPath) ? stats.publicPath : ''
   // assetsByChunkName contains a hash with the bundle names and the produced files
   // e.g. { one: 'one-bundle.js', two: 'two-bundle.js' }

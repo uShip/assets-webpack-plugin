@@ -430,16 +430,16 @@ describe('Plugin', function () {
   })
 
   it('accepts a function which returns a custom manifest object from stats', function (done) {
-    function customGenerateManifest(stats, pluginOptions, utils) {
-      return Object.keys(stats.assetsByChunkName).reduce(function(manifest, k) {
+    function customGenerateManifest (stats, pluginOptions, utils) {
+      return Object.keys(stats.assetsByChunkName).reduce(function (manifest, k) {
         var assets = stats.assetsByChunkName[k]
         if (!Array.isArray(assets)) {
           assets = [assets]
         }
-        manifest[k] = assets.filter(function(chunk) {
+        manifest[k] = assets.filter(function (chunk) {
           return utils.getAssetKind(chunk) === 'js'
         })
-        return manifest;
+        return manifest
       }, {})
     }
 
