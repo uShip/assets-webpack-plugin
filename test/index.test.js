@@ -428,4 +428,56 @@ describe('Plugin', function () {
 
     expectOutput(args, done)
   })
+
+  it('accepts a function which returns a custom manifest object from stats', function (done) {
+    function customGenerateManifest(stats, pluginOptions, utils) {
+      return Object.keys(stats.assetsByChunkName).reduce(function(manifest, k) {
+        var assets = stats.assetsByChunkName[k]
+        if (!Array.isArray(assets)) {
+          assets = [assets]
+        }
+        manifest[k] = assets.filter(function(chunk) {
+          return utils.getAssetKind(chunk) === 'js'
+        })
+        return manifest;
+      }, {})
+    }
+
+    var webpackConfig = {
+      entry: {
+        one: path.join(__dirname, 'fixtures/one.js'),
+        two: path.join(__dirname, 'fixtures/two.js'),
+        styles: path.join(__dirname, 'fixtures/styles.js')
+      },
+      output: {
+        path: OUTPUT_DIR,
+        filename: '[name]-bundle.js'
+      },
+      module: {
+        loaders: [
+                {test: /\.css$/, loader: ExtractTextPlugin.extract('style-loader', 'css-loader')}
+        ]
+      },
+      plugins: [
+        new ExtractTextPlugin('[name]-bundle.css', {allChunks: true}),
+        new Plugin({
+          path: 'tmp',
+          generateManifest: customGenerateManifest
+        })
+      ]
+    }
+
+    var expected = {
+      one: ['one-bundle.js'],
+      two: ['two-bundle.js'],
+      styles: ['styles-bundle.js']
+    }
+
+    var args = {
+      config: webpackConfig,
+      expected: expected
+    }
+
+    expectOutput(args, done)
+  })
 })
